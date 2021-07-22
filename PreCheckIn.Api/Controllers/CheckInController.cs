@@ -34,12 +34,21 @@ namespace PreCheckIn.Api.Controllers
             {
                 Response response = _bookingManagement.AddBooking(booking);
                 if (response.Status == HttpStatusCode.OK)
-                    return Ok(new Response {Status = HttpStatusCode.OK, Body = response.Body });
+                    return Ok(new Response {Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
                 return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
             }
             return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Invalid received information." });
 
+        }
+
+
+
+        [HttpGet]
+        [Route("signin/{reference}")]
+        public IActionResult SignIn(string reference)
+        {
+            return Content("Hello");
         }
 
     }

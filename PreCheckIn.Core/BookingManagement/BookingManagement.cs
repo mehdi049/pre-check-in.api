@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PreCheckIn.Core.EmailManagement;
 using PreCheckIn.Data;
 
 namespace PreCheckIn.Core.BookingManagement
@@ -15,9 +16,12 @@ namespace PreCheckIn.Core.BookingManagement
     {
         private ApplicationDbContext _dbContext;
 
-        public BookingManagement(ApplicationDbContext dbContext)
+        private EmailManagement.IEmailManagement _sendEmail;
+
+        public BookingManagement(ApplicationDbContext dbContext, EmailManagement.IEmailManagement sendEmail)
         {
             _dbContext = dbContext;
+            _sendEmail = sendEmail;
         }
 
         public Response AddBooking(Booking booking)
@@ -36,7 +40,7 @@ namespace PreCheckIn.Core.BookingManagement
             {
                 Booking b = _dbContext.Booking.Where(x => x.Reference.ToLower().Equals(booking.Reference.ToLower()))
                     ?.FirstOrDefault();
-                if(b!=null)
+                if (b != null)
                     return new Response
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -60,14 +64,22 @@ namespace PreCheckIn.Core.BookingManagement
 
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
+                string confirmationEmailBody = "Hi " + guest.FirstName + ", <br>" +
+                                           "Please click <a href='https://localhost:44386/api/CheckIn/signin/" + signInToken + "' target='_blank'>here</a> to sign in.";
+
+                string message = "";
+                if (!_sendEmail.SendConfirmationEmail(guest.Email, confirmationEmailBody))
+                    message = "Error occurred when sending a confirmation email.";
+
                 return new Response
                 {
                     Status = HttpStatusCode.OK,
-                    Body = signInToken
+                    Body = signInToken,
+                    Message = message
                 };
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Response()
                 {
