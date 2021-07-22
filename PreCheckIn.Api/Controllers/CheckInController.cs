@@ -34,9 +34,9 @@ namespace PreCheckIn.Api.Controllers
             {
                 Response response = _bookingManagement.AddBooking(booking);
                 if (response.Status == HttpStatusCode.OK)
-                    return Ok(new Response {Status = HttpStatusCode.OK});
+                    return Ok(new Response {Status = HttpStatusCode.OK, Body = response.Body });
 
-                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message, Body = response.Body });
+                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
             }
             return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Invalid received information." });
 

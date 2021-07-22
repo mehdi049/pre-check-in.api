@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using PreCheckIn.Data;
 
 namespace PreCheckIn.Core.BookingManagement
@@ -29,18 +30,33 @@ namespace PreCheckIn.Core.BookingManagement
                 };
 
             string signInToken = Guid.NewGuid().ToString();
+            booking.Timestamp = DateTime.Now;
 
             try
             {
-                booking.BookedBy = new Guest
-                {
-                    FirstName = booking.BookedBy.FirstName,
-                    LastName = booking.BookedBy.LastName,
-                    Email = booking.BookedBy.Email,
-                    SignInToken = signInToken
-                };
+                Booking b = _dbContext.Booking.Where(x => x.Reference.ToLower().Equals(booking.Reference.ToLower()))
+                    ?.FirstOrDefault();
+                if(b!=null)
+                    return new Response
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Booking reference already exists."
+                    };
 
-                booking.Timestamp = DateTime.Now;
+                Guest guest = _dbContext.Guest.Where(x => x.Email.ToLower().Equals(booking.BookedBy.Email.ToLower()))?.FirstOrDefault();
+                if (guest == null)
+                    booking.BookedBy = new Guest
+                    {
+                        FirstName = booking.BookedBy.FirstName,
+                        LastName = booking.BookedBy.LastName,
+                        Email = booking.BookedBy.Email,
+                        SignInToken = signInToken
+                    };
+                else
+                {
+                    booking.GuestId = guest.Id;
+                    _dbContext.Entry(booking).State = EntityState.Added;
+                }
 
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
@@ -51,7 +67,7 @@ namespace PreCheckIn.Core.BookingManagement
                 };
 
             }
-            catch
+            catch(Exception e)
             {
                 return new Response()
                 {
