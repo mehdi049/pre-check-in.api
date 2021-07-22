@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PreCheckIn.Core.EmailManagement;
 using PreCheckIn.Data;
+using PreCheckIn.Data.Models;
 
 namespace PreCheckIn.Core.BookingManagement
 {
@@ -93,11 +94,27 @@ namespace PreCheckIn.Core.BookingManagement
             throw new NotImplementedException();
         }
 
+        public Booking GetBookingBySignIn(SignInModel signIn)
+        {
+            if (signIn == null)
+                return null;
+
+            return _dbContext.Booking.Include(x => x.BookedBy).Where(
+                x => x.Reference.ToLower().Equals(signIn.Reference.ToLower())
+                &&
+                x.ArrivalDate == signIn.ArrivalDate
+                &&
+                x.DepartureDate == signIn.DepartureDate
+                &&
+                x.BookedBy.Email.ToLower() == signIn.Email
+                )?.FirstOrDefault();
+        }
+
         public Booking GetBookingByToken(string bookingToken)
         {
             if (string.IsNullOrEmpty(bookingToken))
                 return null;
-            return _dbContext.Booking.Include(x=>x.BookedBy).Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
+            return _dbContext.Booking.Include(x => x.BookedBy).Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
     }
 }

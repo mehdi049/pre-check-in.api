@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PreCheckIn.Data.Common;
 using PreCheckIn.Data.Entities;
+using PreCheckIn.Data.Models;
 
 namespace PreCheckIn.Core.BookingManagement
 {
@@ -13,5 +14,6 @@ namespace PreCheckIn.Core.BookingManagement
         Response AddBooking(Booking booking);
         Booking GetBookingById(int id);
         Booking GetBookingByToken(string bookingToken);
+        Booking GetBookingBySignIn(SignInModel signIn);
     }
 }

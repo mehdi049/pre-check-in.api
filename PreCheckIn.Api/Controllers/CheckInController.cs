@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PreCheckIn.Core.BookingManagement;
 using PreCheckIn.Data.Common;
 using PreCheckIn.Data.Entities;
+using PreCheckIn.Data.Models;
 
 namespace PreCheckIn.Api.Controllers
 {
@@ -24,7 +20,6 @@ namespace PreCheckIn.Api.Controllers
             _logger = logger;
             _bookingManagement = bookingManagement;
         }
-
 
         [HttpPost]
         [Route("post")]
@@ -42,8 +37,6 @@ namespace PreCheckIn.Api.Controllers
 
         }
 
-
-
         [HttpGet]
         [Route("signin/{token}")]
         public IActionResult SignIn(string token)
@@ -52,6 +45,17 @@ namespace PreCheckIn.Api.Controllers
             if(booking==null)
                 return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
             return  Ok(new Response { Status = HttpStatusCode.OK, Body = booking.Reference });
+        }
+
+
+        [HttpPost]
+        [Route("signin")]
+        public IActionResult SignIn(SignInModel model)
+        {
+            Booking booking = _bookingManagement.GetBookingBySignIn(model);
+            if (booking == null)
+                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+            return Ok(new Response { Status = HttpStatusCode.OK });
         }
 
     }
