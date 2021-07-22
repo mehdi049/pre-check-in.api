@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PreCheckIn.Core.BookingManagement;
 using PreCheckIn.Data;
 
 namespace PreCheckIn.Api
@@ -56,6 +57,9 @@ namespace PreCheckIn.Api
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             });
+
+            /** dependency injection **/
+            services.AddScoped<IBookingManagement, BookingManagement>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
