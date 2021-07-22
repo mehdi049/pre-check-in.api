@@ -45,10 +45,13 @@ namespace PreCheckIn.Api.Controllers
 
 
         [HttpGet]
-        [Route("signin/{reference}")]
-        public IActionResult SignIn(string reference)
+        [Route("signin/{token}")]
+        public IActionResult SignIn(string token)
         {
-            return Content("Hello");
+            Booking booking = _bookingManagement.GetBookingByToken(token);
+            if(booking==null)
+                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+            return  Ok(new Response { Status = HttpStatusCode.OK, Body = booking.Reference });
         }
 
     }

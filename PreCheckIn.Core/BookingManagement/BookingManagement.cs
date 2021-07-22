@@ -33,7 +33,7 @@ namespace PreCheckIn.Core.BookingManagement
                     Message = "Invalid 'arrival / departure date'."
                 };
 
-            string signInToken = Guid.NewGuid().ToString();
+            string bookingToken = Guid.NewGuid().ToString();
             booking.Timestamp = DateTime.Now;
 
             try
@@ -49,23 +49,22 @@ namespace PreCheckIn.Core.BookingManagement
 
                 Guest guest = _dbContext.Guest.Where(x => x.Email.ToLower().Equals(booking.BookedBy.Email.ToLower()))?.FirstOrDefault();
                 if (guest == null)
-                    booking.BookedBy = new Guest
+                    guest = new Guest
                     {
                         FirstName = booking.BookedBy.FirstName,
                         LastName = booking.BookedBy.LastName,
                         Email = booking.BookedBy.Email,
-                        SignInToken = signInToken
                     };
                 else
-                {
-                    booking.GuestId = guest.Id;
                     _dbContext.Entry(booking).State = EntityState.Added;
-                }
+
+                booking.BookedBy = guest;
+                booking.Token = bookingToken;
 
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
                 string confirmationEmailBody = "Hi " + guest.FirstName + ", <br>" +
-                                           "Please click <a href='https://localhost:44386/api/CheckIn/signin/" + signInToken + "' target='_blank'>here</a> to sign in.";
+                                           "Please click <a href='https://localhost:44386/api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
 
                 string message = "";
                 if (!_sendEmail.SendConfirmationEmail(guest.Email, confirmationEmailBody))
@@ -74,7 +73,7 @@ namespace PreCheckIn.Core.BookingManagement
                 return new Response
                 {
                     Status = HttpStatusCode.OK,
-                    Body = signInToken,
+                    Body = bookingToken,
                     Message = message
                 };
 
@@ -89,14 +88,16 @@ namespace PreCheckIn.Core.BookingManagement
             }
         }
 
-        public Response GetBookingById(int id)
+        public Booking GetBookingById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Response GetBookingByReference(string reference)
+        public Booking GetBookingByToken(string bookingToken)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(bookingToken))
+                return null;
+            return _dbContext.Booking.Include(x=>x.BookedBy).Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
     }
 }

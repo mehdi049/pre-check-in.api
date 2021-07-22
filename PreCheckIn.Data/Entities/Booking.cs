@@ -19,6 +19,8 @@ namespace PreCheckIn.Data.Entities
         [Required]
         public int? HotelId { get; set; }
         public DateTime Timestamp { get; set; }
+        public string Token { get; set; }
+
 
         public Guest BookedBy { get; set; }
         public int GuestId { get; set; }
