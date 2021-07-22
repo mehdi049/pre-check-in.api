@@ -1,0 +1,13 @@
+/* URL: https://localhost:44386/api/CheckIn/post - POST */
+/* body  */
+{
+    "arrivalDate": "2009-10-04T20:12:45-5:00",
+    "departureDate": "2010-10-04T20:12:45-5:00",
+    "reference": "1",
+    "hotelId":1,
+    "bookedBy":{
+        "firstName":"mehdi",
+        "lastName":"marouani",
+        "email":"mehdi.marouani.049@gmail.com"
+    }
+}
