@@ -10,8 +10,7 @@ namespace PreCheckIn.Data.Models
     public class SignInModel
     {
         [Required]
-        public string Reference { get; set; }
-        [Required]
+        public string BookingReference { get; set; }
         [EmailAddress]
         public string Email { get; set; }
         [Required]

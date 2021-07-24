@@ -44,7 +44,7 @@ namespace PreCheckIn.Api.Controllers
             Booking booking = _bookingManagement.GetBookingByToken(token);
             if(booking==null)
                 return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
-            return  Ok(new Response { Status = HttpStatusCode.OK, Body = booking.Reference });
+            return  Ok(new Response { Status = HttpStatusCode.OK, Body = booking.BookingReference });
         }
 
 

@@ -17,9 +17,9 @@ namespace PreCheckIn.Core.BookingManagement
     {
         private ApplicationDbContext _dbContext;
 
-        private EmailManagement.IEmailManagement _sendEmail;
+        private IEmailManagement _sendEmail;
 
-        public BookingManagement(ApplicationDbContext dbContext, EmailManagement.IEmailManagement sendEmail)
+        public BookingManagement(ApplicationDbContext dbContext, IEmailManagement sendEmail)
         {
             _dbContext = dbContext;
             _sendEmail = sendEmail;
@@ -27,19 +27,41 @@ namespace PreCheckIn.Core.BookingManagement
 
         public Response AddBooking(Booking booking)
         {
-            if (booking.ArrivalDate > booking.DepartureDate)
+            if (booking.Rooms == null || booking.Rooms.Count == 0)
                 return new Response
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Invalid 'arrival / departure date'."
+                    Message = "Room(s) information is required."
                 };
 
+            foreach (var room in booking.Rooms)
+                if (room.ArrivalDate > room.DepartureDate)
+                    return new Response
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Invalid Arrival / Departure date for the room " + room.RoomNumber + "."
+                    };
+
+            if (_dbContext.BookingStatus.Find(1) == null)
+                _dbContext.BookingStatus.Add(new BookingStatus()
+                {
+                    Status = "Pending"
+                });
+            if (_dbContext.BookingStatus.Find(2) == null)
+                _dbContext.BookingStatus.Add(new BookingStatus()
+                {
+                    Status = "Confirmed"
+                });
+            _dbContext.SaveChanges();
+
             string bookingToken = Guid.NewGuid().ToString();
-            booking.Timestamp = DateTime.Now;
+            booking.Token = bookingToken;
+            booking.LastStatusUpdate = DateTime.Now;
+            booking.StatusId = 1;
 
             try
             {
-                Booking b = _dbContext.Booking.Where(x => x.Reference.ToLower().Equals(booking.Reference.ToLower()))
+                Booking b = _dbContext.Booking.Where(x => x.BookingReference.ToLower().Equals(booking.BookingReference.ToLower()))
                     ?.FirstOrDefault();
                 if (b != null)
                     return new Response
@@ -48,27 +70,15 @@ namespace PreCheckIn.Core.BookingManagement
                         Message = "Booking reference already exists."
                     };
 
-                Guest guest = _dbContext.Guest.Where(x => x.Email.ToLower().Equals(booking.BookedBy.Email.ToLower()))?.FirstOrDefault();
-                if (guest == null)
-                    guest = new Guest
-                    {
-                        FirstName = booking.BookedBy.FirstName,
-                        LastName = booking.BookedBy.LastName,
-                        Email = booking.BookedBy.Email,
-                    };
-                else
-                    _dbContext.Entry(booking).State = EntityState.Added;
-
-                booking.BookedBy = guest;
-                booking.Token = bookingToken;
+                Guest bookedBy = booking.Rooms[0].Guests[0];
 
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
-                string confirmationEmailBody = "Hi " + guest.FirstName + ", <br>" +
+                string confirmationEmailBody = "Hi " + bookedBy.FirstName + ", <br>" +
                                            "Please click <a href='https://localhost:44386/api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
 
                 string message = "";
-                if (!_sendEmail.SendConfirmationEmail(guest.Email, confirmationEmailBody))
+                if (!_sendEmail.SendConfirmationEmail(bookedBy.Email, confirmationEmailBody))
                     message = "Error occurred when sending a confirmation email.";
 
                 return new Response
@@ -99,14 +109,14 @@ namespace PreCheckIn.Core.BookingManagement
             if (signIn == null)
                 return null;
 
-            return _dbContext.Booking.Include(x => x.BookedBy).Where(
-                x => x.Reference.ToLower().Equals(signIn.Reference.ToLower())
+            return _dbContext.Booking
+                .Include(x => x.Rooms)
+                .Include(x => x.BookingAdds)
+                .Include(x => x.InvoiceAddress)
+                .Include(x => x.Status)
+                .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower())
                 &&
-                x.ArrivalDate == signIn.ArrivalDate
-                &&
-                x.DepartureDate == signIn.DepartureDate
-                &&
-                x.BookedBy.Email.ToLower() == signIn.Email
+                x.Rooms.Any(y=>y.ArrivalDate==signIn.ArrivalDate && y.DepartureDate== signIn.DepartureDate) 
                 )?.FirstOrDefault();
         }
 
@@ -114,7 +124,13 @@ namespace PreCheckIn.Core.BookingManagement
         {
             if (string.IsNullOrEmpty(bookingToken))
                 return null;
-            return _dbContext.Booking.Include(x => x.BookedBy).Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
+
+            return _dbContext.Booking
+                .Include(x => x.Rooms)
+                .Include(x => x.BookingAdds)
+                .Include(x => x.InvoiceAddress)
+                .Include(x => x.Status)
+                .Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
     }
 }

@@ -1,29 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PreCheckIn.Data.Entities
 {
     public class Booking
     {
+        public Booking()
+        {
+            Rooms = new List<Room>();
+            BookingAdds = new List<BookingAdd>();
+        }
+
         public int Id { get; set; }
         [Required]
-        public DateTime? ArrivalDate { get; set; }
-        [Required]
-        public DateTime? DepartureDate { get; set; }
-        [Required]
-        public string Reference { get; set; }
+        public string BookingReference { get; set; }
         [Required]
         public int? HotelId { get; set; }
-        public DateTime Timestamp { get; set; }
+        public string Comment { get; set; }
+        
         public string Token { get; set; }
+        public DateTime LastStatusUpdate { get; set; }
 
+        [Required]
+        public List<Room> Rooms { get; set; }
+        public List<BookingAdd> BookingAdds { get; set; }
 
-        public Guest BookedBy { get; set; }
-        public int GuestId { get; set; }
+        [Required]
+        public InvoiceAddress InvoiceAddress { get; set; }
+        public int InvoiceAddressId { get; set; }
 
+        public BookingStatus Status { get; set; }
+        public int StatusId { get; set; }
+        
     }
 }

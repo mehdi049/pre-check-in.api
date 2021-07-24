@@ -1,0 +1,7 @@
+/* URL: https://localhost:44386/api/checkin/signin - POST */
+/* body  */
+{
+    "arrivalDate": "2021-07-28T00:00:00",
+    "departureDate": "2021-08-01T00:00:00",
+    "bookingReference":"202107-003-1"
+}

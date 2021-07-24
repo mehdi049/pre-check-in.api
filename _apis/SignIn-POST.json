@@ -1,8 +1,0 @@
-/* URL: https://localhost:44386/api/checkin/signin - POST */
-/* body  */
-{
-    "arrivalDate": "2009-10-04T20:12:45-5:00",
-    "departureDate": "2010-10-04T20:12:45-5:00",
-    "email":"mehdi.marouani.049@gmail.com",
-    "reference":1
-}

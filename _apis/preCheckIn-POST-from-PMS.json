@@ -1,0 +1,129 @@
+/* URL: https://localhost:44386/api/CheckIn/post - POST */
+/* body  */
+{
+   "bookingReference":"202107-003-1",
+   "hotelId":"123456",
+   "comment":"We arrive all together with bus at 19:05",
+   "rooms":[
+      {
+         "roomNumber":"101",
+         "arrivalDate":"2021-07-28T00:00:00",
+         "arrivalTime":"19:00",
+         "departureDate":"2021-08-01T00:00:00",
+         "roomType":2,
+         "roomTypeText":"Double Room Comfort",
+         "package":7,
+         "packageText":"All-Inclusive",
+         "numberOfGuests":2,
+         "roomcomment":"We will take our dog with us",
+         "rates":[
+            {
+               "rateNumber":6,
+               "rateText":"DBC all-inclusive",
+               "rateAmount":"1",
+               "rateSingle":120.00,
+               "rateTotal":120.00,
+               "rateFrom":"2021-07-28T00:00:00",
+               "rateTo":"2021-07-30T00:00:00"
+            },
+            {
+               "rateNumber":6,
+               "rateText":"DBC all-inclusive weekend",
+               "rateAmount":1,
+               "rateSingle":160.00,
+               "rateTotal":160.00,
+               "rateFrom":"2021-07-30T00:00:00",
+               "rateTo":"2021-08-01T00:00:00"
+            }
+         ],
+         "roomAdds":[
+            {
+               "roomAddNumber":3,
+               "roomAddText":"Welcome-bottle of wine",
+               "roomAddAmount":2,
+               "roomAddSingle":27.00,
+               "roomAddTotal":54.00
+            }
+         ],
+         "guests":[
+            {
+               "guestNumber":"1",
+               "salutation":"Mister",
+               "title":"",
+               "firstName":"Steffen",
+               "lastName":"Diemer",
+               "company":"",
+               "birthday":"1965-11-30T00:00:00",
+               "email":"mehdi.marouani.049@gmail.com",
+               "phone":"+49 171-4412333",
+               "country":"Deutschland",
+               "iso3":"DEU",
+               "isoCode":276,
+               "street":"Waldstraße",
+               "streennumber":"26",
+               "zip":"74867",
+               "city":"Neunkirchen",
+               "passport":"LX12345678",
+               "guesttype":1,
+               "guesttypetext":"Adult",
+               "business":false,
+               "guestcomment":"Need a second pillow"
+            },
+            {
+               "guestNumber":"1",
+               "salutation":"Miss",
+               "title":"",
+               "firstName":"Anna",
+               "lastName":"Streit",
+               "company":"",
+               "birthday":"2001-03-03T00:00:00",
+               "email":"mehdi.marouani.049-2@gmail.com",
+               "phone":"",
+               "country":"Deutschland",
+               "iso3":"DEU",
+               "isoCode":276,
+               "street":"Waldstrasse",
+               "streennumber":"26",
+               "zip":"74867",
+               "city":"Neunkirchen",
+               "passport":"",
+               "guesttype":1,
+               "guesttypetext":"Adult",
+               "business":false,
+               "guestcomment":""
+            }
+         ]
+      }
+   ],
+   "bookingAdds":[
+      {
+         "bookingAddNumber":3,
+         "bookingAddText":"Meetingroom 'Venezuela'",
+         "bookingAddAmount":1,
+         "bookingAddSingle":200.00,
+         "bookingAddTotal":200.00
+      }
+   ],
+   "invoiceaddress":{
+      "salutation":"Mister",
+      "title":"",
+      "company":"hope-Software GmbH",
+      "company1":"",
+      "company2":"",
+      "contact":"Mr. Steffen Diemer",
+      "firstName":"",
+      "lastName":"",
+      "email":"mehdi.marouani.049-3@gmail.com",
+      "phone":"+49 6262-880980",
+      "country":"Deutschland",
+      "iso3":"DEU",
+      "isoCode":276,
+      "street":"Waldstraße",
+      "streennumber":"26",
+      "zip":"74867",
+      "city":"Neunkirchen",
+      "taxnumber":"40190/31001",
+      "vatid":"DE299455492",
+      "invoicecomment":"Please send invoice per postal service"
+   }
+}

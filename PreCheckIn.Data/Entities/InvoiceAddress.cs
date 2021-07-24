@@ -1,24 +1,22 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PreCheckIn.Data.Entities
 {
-    public class Guest
+    public class InvoiceAddress
     {
         public int Id { get; set; }
-        [Required]
-        public string GuestNumber { get; set; }
-        [Required]
         public string Salutation { get; set; }
         public string Title { get; set; }
-        [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string LastName { get; set; }
         public string Company { get; set; }
-        public DateTime? Birthday { get; set; }
-        [Required]
-        [EmailAddress]
+        public string Company1 { get; set; }
+        public string Company2 { get; set; }
+        public string Contact { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Country { get; set; }
@@ -28,13 +26,8 @@ namespace PreCheckIn.Data.Entities
         public string StreetNumber { get; set; }
         public string Zip { get; set; }
         public string City { get; set; }
-        public string Passport { get; set; }
-        public int GuestType { get; set; }
-        public string GuestTypeText { get; set; }
-        public bool Business { get; set; }
-        public string GuestComment { get; set; }
-
-        public Room Room { get; set; }
-        public int RoomId { get; set; }
+        public string TaxNumber { get; set; }
+        public string Valid { get; set; }
+        public string InvoiceComment { get; set; }
     }
 }
