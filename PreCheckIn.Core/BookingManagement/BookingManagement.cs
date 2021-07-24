@@ -99,25 +99,16 @@ namespace PreCheckIn.Core.BookingManagement
             }
         }
 
-        public Booking GetBookingById(int id)
+        public Booking GetBookingByReference(string reference)
         {
-            throw new NotImplementedException();
-        }
-
-        public Booking GetBookingBySignIn(SignInModel signIn)
-        {
-            if (signIn == null)
-                return null;
-
             Booking booking = _dbContext.Booking
                 .Include(x => x.BookingAdds)
                 .Include(x => x.InvoiceAddress)
                 .Include(x => x.Status)
-                .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower()) &&
-                x.Rooms.Any(y=>y.ArrivalDate==signIn.ArrivalDate && y.DepartureDate== signIn.DepartureDate) 
+                .Where(x => x.BookingReference.ToLower().Equals(reference.ToLower())
                 )?.FirstOrDefault();
 
-            if(booking!=null)
+            if (booking != null)
             {
                 List<Room> rooms = _dbContext.Room
                     .Include(x => x.Guests)
@@ -128,9 +119,31 @@ namespace PreCheckIn.Core.BookingManagement
                 booking.Rooms = rooms;
             }
 
-            if (!string.IsNullOrEmpty(signIn.Email))
-                if (booking.Rooms[0].Guests[0].Email.ToLower() != signIn.Email.ToLower())
-                    return null;
+            return booking;
+        }
+
+        public Booking GetBookingBySignIn(SignInModel signIn)
+        {
+            if (signIn == null)
+                return null;
+
+            Booking booking = _dbContext.Booking
+                .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower()) &&
+                x.Rooms.Any(y=>y.ArrivalDate==signIn.ArrivalDate && y.DepartureDate== signIn.DepartureDate) 
+                )?.FirstOrDefault();
+
+            if(booking!=null)
+            {
+                List<Room> rooms = _dbContext.Room
+                    .Include(x => x.Guests)
+                    .Where(x => x.BookingId == booking.Id).ToList();
+
+                booking.Rooms = rooms;
+
+                if (!string.IsNullOrEmpty(signIn.Email))
+                    if (booking.Rooms[0].Guests[0].Email.ToLower() != signIn.Email.ToLower())
+                        return null;
+            }
 
             return booking;
         }

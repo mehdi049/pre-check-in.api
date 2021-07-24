@@ -58,5 +58,16 @@ namespace PreCheckIn.Api.Controllers
             return Ok(new Response { Status = HttpStatusCode.OK });
         }
 
+
+        [HttpGet]
+        [Route("booking/{reference}")]
+        public IActionResult Booking(string reference)
+        {
+            Booking booking = _bookingManagement.GetBookingByReference(reference);
+            if (booking == null)
+                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+            return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
+        }
+
     }
 }

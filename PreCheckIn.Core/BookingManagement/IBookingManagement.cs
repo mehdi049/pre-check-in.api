@@ -12,7 +12,7 @@ namespace PreCheckIn.Core.BookingManagement
     public interface IBookingManagement
     {
         Response AddBooking(Booking booking);
-        Booking GetBookingById(int id);
+        Booking GetBookingByReference(string reference);
         Booking GetBookingByToken(string bookingToken);
         Booking GetBookingBySignIn(SignInModel signIn);
     }
