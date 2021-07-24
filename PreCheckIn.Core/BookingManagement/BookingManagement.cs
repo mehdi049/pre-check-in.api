@@ -109,15 +109,30 @@ namespace PreCheckIn.Core.BookingManagement
             if (signIn == null)
                 return null;
 
-            return _dbContext.Booking
-                .Include(x => x.Rooms)
+            Booking booking = _dbContext.Booking
                 .Include(x => x.BookingAdds)
                 .Include(x => x.InvoiceAddress)
                 .Include(x => x.Status)
-                .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower())
-                &&
+                .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower()) &&
                 x.Rooms.Any(y=>y.ArrivalDate==signIn.ArrivalDate && y.DepartureDate== signIn.DepartureDate) 
                 )?.FirstOrDefault();
+
+            if(booking!=null)
+            {
+                List<Room> rooms = _dbContext.Room
+                    .Include(x => x.Guests)
+                    .Include(x => x.Rates)
+                    .Include(x => x.RoomAdds)
+                    .Where(x => x.BookingId == booking.Id).ToList();
+
+                booking.Rooms = rooms;
+            }
+
+            if (!string.IsNullOrEmpty(signIn.Email))
+                if (booking.Rooms[0].Guests[0].Email.ToLower() != signIn.Email.ToLower())
+                    return null;
+
+            return booking;
         }
 
         public Booking GetBookingByToken(string bookingToken)
@@ -125,12 +140,7 @@ namespace PreCheckIn.Core.BookingManagement
             if (string.IsNullOrEmpty(bookingToken))
                 return null;
 
-            return _dbContext.Booking
-                .Include(x => x.Rooms)
-                .Include(x => x.BookingAdds)
-                .Include(x => x.InvoiceAddress)
-                .Include(x => x.Status)
-                .Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
+            return _dbContext.Booking.Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
     }
 }
