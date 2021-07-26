@@ -91,7 +91,7 @@ namespace PreCheckIn.Core.BookingManagement
             }
             catch (Exception e)
             {
-                return new Response()
+                return new Response
                 {
                     Status = HttpStatusCode.BadRequest,
                     Message = "Error occurred, please try again."
@@ -129,10 +129,10 @@ namespace PreCheckIn.Core.BookingManagement
 
             Booking booking = _dbContext.Booking
                 .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower()) &&
-                x.Rooms.Any(y=>y.ArrivalDate==signIn.ArrivalDate && y.DepartureDate== signIn.DepartureDate) 
+                x.Rooms.Any(y => y.ArrivalDate == signIn.ArrivalDate && y.DepartureDate == signIn.DepartureDate)
                 )?.FirstOrDefault();
 
-            if(booking!=null)
+            if (booking != null)
             {
                 List<Room> rooms = _dbContext.Room
                     .Include(x => x.Guests)
@@ -154,6 +154,45 @@ namespace PreCheckIn.Core.BookingManagement
                 return null;
 
             return _dbContext.Booking.Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
+        }
+
+        public Response UpdateBookingGuests(string bookingReference, Guest[] guests)
+        {
+            if (string.IsNullOrEmpty(bookingReference))
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Booking reference is missing."
+                };
+            if (guests == null || guests.Length == 0)
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "The booking should have at least 1 guest."
+                };
+
+            try
+            {
+                Booking booking = GetBookingByReference(bookingReference);
+                if (booking == null)
+                    return new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." };
+
+                foreach (var room in booking.Rooms)
+                    room.Guests = guests.Where(x => x.RoomId.Equals(room.Id)).ToList();
+
+                _dbContext.Booking.Update(booking);
+                _dbContext.SaveChanges();
+
+                return new Response { Status = HttpStatusCode.OK};
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Error occurred, please try again."
+                };
+            }
         }
     }
 }

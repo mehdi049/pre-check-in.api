@@ -25,16 +25,11 @@ namespace PreCheckIn.Api.Controllers
         [Route("post")]
         public IActionResult Post(Booking booking)
         {
-            if (ModelState.IsValid)
-            {
-                Response response = _bookingManagement.AddBooking(booking);
-                if (response.Status == HttpStatusCode.OK)
-                    return Ok(new Response {Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
+            Response response = _bookingManagement.AddBooking(booking);
+            if (response.Status == HttpStatusCode.OK)
+                return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
-                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
-            }
-            return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Invalid received information." });
-
+            return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
         [HttpGet]
@@ -42,9 +37,9 @@ namespace PreCheckIn.Api.Controllers
         public IActionResult SignIn(string token)
         {
             Booking booking = _bookingManagement.GetBookingByToken(token);
-            if(booking==null)
+            if (booking == null)
                 return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
-            return  Ok(new Response { Status = HttpStatusCode.OK, Body = booking.BookingReference });
+            return Ok(new Response { Status = HttpStatusCode.OK, Body = booking.BookingReference });
         }
 
 
@@ -67,6 +62,18 @@ namespace PreCheckIn.Api.Controllers
             if (booking == null)
                 return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
             return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
+        }
+
+
+        [HttpPut]
+        [Route("guests/{reference}")]
+        public IActionResult UpdateGuests(string reference, [FromBody] Guest[] guests)
+        {
+            Response response = _bookingManagement.UpdateBookingGuests(reference, guests);
+            if (response.Status == HttpStatusCode.OK)
+                return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
+
+            return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
     }
