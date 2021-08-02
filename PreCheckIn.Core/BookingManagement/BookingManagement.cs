@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PreCheckIn.Core.EmailManagement;
 using PreCheckIn.Data;
 using PreCheckIn.Data.Models;
@@ -18,11 +19,13 @@ namespace PreCheckIn.Core.BookingManagement
         private ApplicationDbContext _dbContext;
 
         private IEmailManagement _sendEmail;
+        private IConfiguration _configuration;
 
-        public BookingManagement(ApplicationDbContext dbContext, IEmailManagement sendEmail)
+        public BookingManagement(ApplicationDbContext dbContext, IEmailManagement sendEmail, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _sendEmail = sendEmail;
+            _configuration = configuration;
         }
 
         public Response AddBooking(Booking booking)
@@ -75,7 +78,7 @@ namespace PreCheckIn.Core.BookingManagement
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
                 string confirmationEmailBody = "Hi " + bookedBy.FirstName + ", <br>" +
-                                           "Please click <a href='https://localhost:44386/api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
+                                           "Please click <a href='"+ _configuration["ProjectUrl"] + "api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
 
                 string message = "";
                 if (!_sendEmail.SendConfirmationEmail(bookedBy.Email, confirmationEmailBody))
