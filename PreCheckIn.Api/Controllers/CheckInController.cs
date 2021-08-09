@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PreCheckIn.Core.BookingManagement;
 using PreCheckIn.Data.Common;
@@ -13,12 +14,14 @@ namespace PreCheckIn.Api.Controllers
     public class CheckInController : ControllerBase
     {
         private readonly IBookingManagement _bookingManagement;
+        private IConfiguration _configuration;
         private readonly ILogger<CheckInController> _logger;
 
-        public CheckInController(ILogger<CheckInController> logger, IBookingManagement bookingManagement)
+        public CheckInController(ILogger<CheckInController> logger, IBookingManagement bookingManagement, IConfiguration configuration)
         {
             _logger = logger;
             _bookingManagement = bookingManagement;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -29,7 +32,7 @@ namespace PreCheckIn.Api.Controllers
             if (response.Status == HttpStatusCode.OK)
                 return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
-            return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
+            return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
         [HttpGet]
@@ -38,8 +41,8 @@ namespace PreCheckIn.Api.Controllers
         {
             Booking booking = _bookingManagement.GetBookingByToken(token);
             if (booking == null)
-                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
-            return Ok(new Response { Status = HttpStatusCode.OK, Body = booking.BookingReference });
+                return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+            return Redirect(_configuration["UIUrl"] +"?ref=" + booking.BookingReference);
         }
 
 
@@ -49,8 +52,8 @@ namespace PreCheckIn.Api.Controllers
         {
             Booking booking = _bookingManagement.GetBookingBySignIn(model);
             if (booking == null)
-                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
-            return Ok(new Response { Status = HttpStatusCode.OK });
+                return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+            return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
         }
 
 
@@ -60,7 +63,7 @@ namespace PreCheckIn.Api.Controllers
         {
             Booking booking = _bookingManagement.GetBookingByReference(reference);
             if (booking == null)
-                return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+                return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
             return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
         }
 
@@ -73,7 +76,7 @@ namespace PreCheckIn.Api.Controllers
             if (response.Status == HttpStatusCode.OK)
                 return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
-            return BadRequest(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
+            return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
     }

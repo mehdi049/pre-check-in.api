@@ -2,6 +2,7 @@
 using PreCheckIn.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -78,7 +79,7 @@ namespace PreCheckIn.Core.BookingManagement
                 _dbContext.Booking.Add(booking);
                 _dbContext.SaveChanges();
                 string confirmationEmailBody = "Hi " + bookedBy.FirstName + ", <br>" +
-                                           "Please click <a href='"+ _configuration["ProjectUrl"] + "api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
+                                           "Please click <a href='" + _configuration["ApiUrl"] + "api/CheckIn/signin/" + bookingToken + "' target='_blank'>here</a> to sign in.";
 
                 string message = "";
                 if (!_sendEmail.SendConfirmationEmail(bookedBy.Email, confirmationEmailBody))
@@ -129,8 +130,12 @@ namespace PreCheckIn.Core.BookingManagement
         {
             if (signIn == null)
                 return null;
-
+            signIn.ArrivalDate = new DateTime(DateTime.Parse(signIn.ArrivalDate.ToString()).Year, DateTime.Parse(signIn.ArrivalDate.ToString()).Month, DateTime.Parse(signIn.ArrivalDate.ToString()).Day, 0, 0, 0);
+            signIn.DepartureDate = new DateTime(DateTime.Parse(signIn.DepartureDate.ToString()).Year, DateTime.Parse(signIn.DepartureDate.ToString()).Month, DateTime.Parse(signIn.DepartureDate.ToString()).Day, 0, 0, 0);
             Booking booking = _dbContext.Booking
+                .Include(x => x.BookingAdds)
+                .Include(x => x.InvoiceAddress)
+                .Include(x => x.Status)
                 .Where(x => x.BookingReference.ToLower().Equals(signIn.BookingReference.ToLower()) &&
                 x.Rooms.Any(y => y.ArrivalDate == signIn.ArrivalDate && y.DepartureDate == signIn.DepartureDate)
                 )?.FirstOrDefault();
@@ -139,6 +144,8 @@ namespace PreCheckIn.Core.BookingManagement
             {
                 List<Room> rooms = _dbContext.Room
                     .Include(x => x.Guests)
+                    .Include(x => x.Rates)
+                    .Include(x => x.RoomAdds)
                     .Where(x => x.BookingId == booking.Id).ToList();
 
                 booking.Rooms = rooms;
@@ -186,7 +193,7 @@ namespace PreCheckIn.Core.BookingManagement
                 _dbContext.Booking.Update(booking);
                 _dbContext.SaveChanges();
 
-                return new Response { Status = HttpStatusCode.OK};
+                return new Response { Status = HttpStatusCode.OK };
             }
             catch (Exception e)
             {
