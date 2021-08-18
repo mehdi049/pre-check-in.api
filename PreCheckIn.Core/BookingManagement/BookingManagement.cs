@@ -49,7 +49,7 @@ namespace PreCheckIn.Core.BookingManagement
             if (_dbContext.BookingStatus.Find(1) == null)
                 _dbContext.BookingStatus.Add(new BookingStatus()
                 {
-                    Status = "Pending"
+                    Status = "Incomplete"
                 });
             if (_dbContext.BookingStatus.Find(2) == null)
                 _dbContext.BookingStatus.Add(new BookingStatus()
@@ -166,31 +166,46 @@ namespace PreCheckIn.Core.BookingManagement
             return _dbContext.Booking.Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
 
-        public Response UpdateBookingGuests(string bookingReference, Guest[] guests)
+        public Response UpdateBookingGuest(Guest guest)
         {
-            if (string.IsNullOrEmpty(bookingReference))
+            if (guest == null || _dbContext.Guest.Find(guest.Id) == null)
                 return new Response
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Booking reference is missing."
-                };
-            if (guests == null || guests.Length == 0)
-                return new Response
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Message = "The booking should have at least 1 guest."
+                    Message = "Enable to update the selected guest, please try again."
                 };
 
             try
             {
-                Booking booking = GetBookingByReference(bookingReference);
-                if (booking == null)
-                    return new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." };
+                _dbContext.Entry(guest).State = EntityState.Modified;
+                _dbContext.SaveChanges();
 
-                foreach (var room in booking.Rooms)
-                    room.Guests = guests.Where(x => x.RoomId.Equals(room.Id)).ToList();
+                return new Response { Status = HttpStatusCode.OK };
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Error occurred, please try again."
+                };
+            }
+        }
 
-                _dbContext.Booking.Update(booking);
+        public Response ConfirmBooking(string bookingRef)
+        {
+            Booking booking = GetBookingByReference(bookingRef);
+            if (string.IsNullOrEmpty(bookingRef) || booking == null)
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Booking not found."
+                };
+
+            try
+            {
+                booking.StatusId = 2;
+                _dbContext.Entry(booking).State = EntityState.Modified;
                 _dbContext.SaveChanges();
 
                 return new Response { Status = HttpStatusCode.OK };

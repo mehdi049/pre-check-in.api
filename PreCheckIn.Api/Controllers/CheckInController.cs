@@ -69,10 +69,22 @@ namespace PreCheckIn.Api.Controllers
 
 
         [HttpPut]
-        [Route("guests/{reference}")]
-        public IActionResult UpdateGuests(string reference, [FromBody] Guest[] guests)
+        [Route("guest/")]
+        public IActionResult UpdateGuests([FromBody] Guest guest)
         {
-            Response response = _bookingManagement.UpdateBookingGuests(reference, guests);
+            Response response = _bookingManagement.UpdateBookingGuest(guest);
+            if (response.Status == HttpStatusCode.OK)
+                return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
+
+            return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
+        }
+
+
+        [HttpPut]
+        [Route("confirm/{reference}")]
+        public IActionResult ConfirmBooking(string reference)
+        {
+            Response response = _bookingManagement.ConfirmBooking(reference);
             if (response.Status == HttpStatusCode.OK)
                 return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
