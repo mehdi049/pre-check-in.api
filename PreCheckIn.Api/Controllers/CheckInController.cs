@@ -68,7 +68,7 @@ namespace PreCheckIn.Api.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPost]
         [Route("guest/")]
         public IActionResult UpdateGuests([FromBody] Guest guest)
         {
@@ -80,7 +80,7 @@ namespace PreCheckIn.Api.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPost]
         [Route("confirm/{reference}")]
         public IActionResult ConfirmBooking(string reference)
         {
