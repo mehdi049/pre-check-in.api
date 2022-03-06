@@ -150,8 +150,8 @@ namespace PreCheckIn.Core.BookingManagement
 
                 booking.Rooms = rooms;
 
-                if (!string.IsNullOrEmpty(signIn.Email))
-                    if (booking.Rooms[0].Guests[0].Email.ToLower() != signIn.Email.ToLower())
+                if (!string.IsNullOrEmpty(signIn.Lastname))
+                    if (booking.Rooms[0].Guests[0].LastName.ToLower().Trim() != signIn.Lastname.ToLower().Trim())
                         return null;
             }
 

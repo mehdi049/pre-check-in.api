@@ -11,8 +11,8 @@ namespace PreCheckIn.Data.Models
     {
         [Required]
         public string BookingReference { get; set; }
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required]
+        public string Lastname { get; set; }
         [Required]
         public DateTime? ArrivalDate { get; set; }
         [Required]
