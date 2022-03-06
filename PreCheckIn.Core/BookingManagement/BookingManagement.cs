@@ -166,6 +166,11 @@ namespace PreCheckIn.Core.BookingManagement
             return _dbContext.Booking.Where(x => x.Token.ToLower().Equals(bookingToken.ToLower()))?.FirstOrDefault();
         }
 
+        public Booking[] GetBookings()
+        {
+            return _dbContext.Booking.ToArray();
+        }
+
         public Response UpdateBookingGuest(Guest guest)
         {
             if (guest == null || _dbContext.Guest.Find(guest.Id) == null)
@@ -219,5 +224,34 @@ namespace PreCheckIn.Core.BookingManagement
                 };
             }
         }
+
+
+        public Response DeleteBooking(string reference)
+        {
+            Booking booking = GetBookingByReference(reference);
+            if (booking==null)
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Booking not found."
+                };
+
+            try
+            {
+                _dbContext.Remove(booking);
+                _dbContext.SaveChanges();
+
+                return new Response { Status = HttpStatusCode.OK };
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Error occurred, please try again."
+                };
+            }
+        }
+
     }
 }

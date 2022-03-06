@@ -15,8 +15,10 @@ namespace PreCheckIn.Core.BookingManagement
         Booking GetBookingByReference(string reference);
         Booking GetBookingByToken(string bookingToken);
         Booking GetBookingBySignIn(SignInModel signIn);
+        Booking[] GetBookings();
         Response UpdateBookingGuest(Guest guest);
         Response ConfirmBooking(string bookingRef);
+        Response DeleteBooking(string reference);
 
     }
 }

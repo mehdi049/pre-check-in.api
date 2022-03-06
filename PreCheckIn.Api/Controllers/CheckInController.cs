@@ -67,6 +67,14 @@ namespace PreCheckIn.Api.Controllers
             return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
         }
 
+        [HttpGet]
+        [Route("bookings")]
+        public IActionResult GetAllBookings()
+        {
+            Booking[] booking = _bookingManagement.GetBookings();
+            return Ok(new Response { Status = HttpStatusCode.OK, Body = booking });
+        }
+
 
         [HttpPost]
         [Route("guest/")]
@@ -88,6 +96,16 @@ namespace PreCheckIn.Api.Controllers
             if (response.Status == HttpStatusCode.OK)
                 return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
 
+            return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
+        }
+
+        [HttpDelete]
+        [Route("booking/{reference}")]
+        public IActionResult DeleteBooking(string reference)
+        {
+            Response response = _bookingManagement.DeleteBooking(reference);
+            if (response.Status == HttpStatusCode.OK)
+                return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
             return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
