@@ -14,6 +14,9 @@ namespace PreCheckIn.Data
         public DbSet<Room> Room { get; set; }
         public DbSet<RoomAdd> RoomAdds { get; set; }
 
+        public DbSet<HotelSettings> HotelSettings { get; set; }
+        public DbSet<HotelAdmin> HotelAdmin { get; set; }
+
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

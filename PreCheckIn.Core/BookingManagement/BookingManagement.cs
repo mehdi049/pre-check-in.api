@@ -177,7 +177,7 @@ namespace PreCheckIn.Core.BookingManagement
                 return new Response
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Enable to update the selected guest, please try again."
+                    Message = "Guest not found, please try again."
                 };
 
             try
