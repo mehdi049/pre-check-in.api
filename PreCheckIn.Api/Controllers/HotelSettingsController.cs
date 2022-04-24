@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PreCheckIn.Core.HotelSettingsManagement;
 using PreCheckIn.Data.Common;
 using PreCheckIn.Data.Entities;
+using PreCheckIn.Data.Models;
 
 namespace PreCheckIn.Api.Controllers
 {
@@ -36,11 +37,11 @@ namespace PreCheckIn.Api.Controllers
 
         [HttpPost]
         [Route("signin")]
-        public IActionResult SignIn(HotelAdmin model)
+        public IActionResult SignIn(HotelSettingsSignInModel model)
         {
             HotelAdmin hotelAdmin = _hotelSettingsManagement.GetHotelSettingsBySignIn(model);
             if (hotelAdmin == null)
-                return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Booking information not found." });
+                return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Hotel settings not found." });
             return Ok(new Response { Status = HttpStatusCode.OK, Body = hotelAdmin });
         }
 

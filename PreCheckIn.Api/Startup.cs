@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using PreCheckIn.Core.BookingManagement;
 using PreCheckIn.Core.EmailManagement;
 using PreCheckIn.Core.GuestManagement;
+using PreCheckIn.Core.HotelSettingsManagement;
 using PreCheckIn.Data;
 
 namespace PreCheckIn.Api
@@ -43,6 +44,7 @@ namespace PreCheckIn.Api
             services.AddScoped<IBookingManagement, BookingManagement>();
             services.AddScoped<IGuestManagement, GuestManagement>();
             services.AddScoped<IEmailManagement, EmailManagement>();
+            services.AddScoped<IHotelSettingsManagement, HotelSettingsManagement>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore

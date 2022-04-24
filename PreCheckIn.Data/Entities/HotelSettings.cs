@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -10,6 +11,11 @@ namespace PreCheckIn.Data.Entities
 {
     public class HotelSettings
     {
+        public HotelSettings()
+        {
+            Logo= new Blob();
+        }
+
         [Required]
         public int Id { get; set; }
         [Required]
@@ -29,6 +35,8 @@ namespace PreCheckIn.Data.Entities
         public string BBQFun { get; set; }
         public string PicnicBasket { get; set; }
         public string DiningOptions { get; set; }
+
+        [NotMapped]
         public Blob Logo { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PreCheckIn.Core.EmailManagement;
 using PreCheckIn.Data;
+using PreCheckIn.Data.Models;
 
 namespace PreCheckIn.Core.HotelSettingsManagement
 {
@@ -104,7 +105,7 @@ namespace PreCheckIn.Core.HotelSettingsManagement
             return _dbContext.HotelSettings.Find(id);
         }
 
-        public HotelAdmin GetHotelSettingsBySignIn(HotelAdmin signIn)
+        public HotelAdmin GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn)
         {
             if (signIn == null)
                 return null;
