@@ -39,10 +39,10 @@ namespace PreCheckIn.Api.Controllers
         [Route("signin")]
         public IActionResult SignIn(HotelSettingsSignInModel model)
         {
-            HotelAdmin hotelAdmin = _hotelSettingsManagement.GetHotelSettingsBySignIn(model);
-            if (hotelAdmin == null)
+            HotelSettings hotelSettings = _hotelSettingsManagement.GetHotelSettingsBySignIn(model);
+            if (hotelSettings == null)
                 return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = "Hotel settings not found." });
-            return Ok(new Response { Status = HttpStatusCode.OK, Body = hotelAdmin });
+            return Ok(new Response { Status = HttpStatusCode.OK, Body = hotelSettings });
         }
 
         [HttpGet]

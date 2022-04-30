@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PreCheckIn.Data;
 
 namespace PreCheckIn.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220429211147_Ref")]
+    partial class Ref
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,11 +202,16 @@ namespace PreCheckIn.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HotelSettingsId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HotelSettingsId");
 
                     b.ToTable("HotelAdmin");
                 });
@@ -235,9 +242,6 @@ namespace PreCheckIn.Data.Migrations
                     b.Property<string>("Fax")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HotelAdminId")
-                        .HasColumnType("int");
-
                     b.Property<string>("InstagramLink")
                         .HasColumnType("nvarchar(max)");
 
@@ -254,7 +258,7 @@ namespace PreCheckIn.Data.Migrations
                     b.Property<string>("Postcode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Reference")
+                    b.Property<int>("Ref")
                         .HasColumnType("int");
 
                     b.Property<string>("Street")
@@ -267,8 +271,6 @@ namespace PreCheckIn.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HotelAdminId");
 
                     b.ToTable("HotelSettings");
                 });
@@ -506,15 +508,15 @@ namespace PreCheckIn.Data.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("PreCheckIn.Data.Entities.HotelSettings", b =>
+            modelBuilder.Entity("PreCheckIn.Data.Entities.HotelAdmin", b =>
                 {
-                    b.HasOne("PreCheckIn.Data.Entities.HotelAdmin", "HotelAdmin")
+                    b.HasOne("PreCheckIn.Data.Entities.HotelSettings", "HotelSettings")
                         .WithMany()
-                        .HasForeignKey("HotelAdminId")
+                        .HasForeignKey("HotelSettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("HotelAdmin");
+                    b.Navigation("HotelSettings");
                 });
 
             modelBuilder.Entity("PreCheckIn.Data.Entities.Rate", b =>

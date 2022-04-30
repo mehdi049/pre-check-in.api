@@ -32,23 +32,22 @@ namespace PreCheckIn.Core.HotelSettingsManagement
         {
             try
             {
-                _dbContext.HotelSettings.Add(hotelSettings);
-                HotelAdmin hotelAdmin = new HotelAdmin()
+                hotelSettings.HotelAdmin = new HotelAdmin()
                 {
                     Email = hotelSettings.Email,
                     Password = hotelSettings.Email,
-                    HotelSettingsId = hotelSettings.Id
                 };
-                _dbContext.HotelAdmin.Add(hotelAdmin);
+                _dbContext.HotelSettings.Add(hotelSettings);
+                _dbContext.SaveChanges();
 
-                string confirmationEmailBody = "Hi " + hotelAdmin.Email + ", <br> " +
+                string confirmationEmailBody = "Hi " + hotelSettings.HotelAdmin.Email + ", <br> " +
                                                "An account is created for you to manage the <b>" + hotelSettings.Name +
                                                "</b> hotel. <br>" +
                                                "Please click <a href='" + _configuration["SettingsUrl"] +
                                                "' target='_blank'>here</a> to sign in. <br>" +
                                                "Your credentials: <br>" +
-                                               "<b>Email:</b> " + hotelAdmin.Email + " <br>" +
-                                               "<b>Password:</b> " + hotelAdmin.Password;
+                                               "<b>Email:</b> " + hotelSettings.HotelAdmin.Email + " <br>" +
+                                               "<b>Password:</b> " + hotelSettings.HotelAdmin.Password;
 
                 string message = "";
                 if (!_sendEmail.SendConfirmationEmail(hotelSettings.Email, confirmationEmailBody))
@@ -82,7 +81,7 @@ namespace PreCheckIn.Core.HotelSettingsManagement
 
             try
             {
-                HotelAdmin hotelAdmin = _dbContext.HotelAdmin.Where(x => x.HotelSettingsId == id).FirstOrDefault();
+                HotelAdmin hotelAdmin = _dbContext.HotelAdmin.Where(x => x.Email.Equals(hotelSettings.Email)).FirstOrDefault();
                 if (hotelAdmin != null)
                     _dbContext.Remove(hotelAdmin);
                 _dbContext.Remove(hotelSettings);
@@ -105,15 +104,14 @@ namespace PreCheckIn.Core.HotelSettingsManagement
             return _dbContext.HotelSettings.Find(id);
         }
 
-        public HotelAdmin GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn)
+        public HotelSettings GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn)
         {
             if (signIn == null)
                 return null;
 
-            HotelAdmin hotelAdmin = _dbContext.HotelAdmin
-                .Where(x => x.Email == signIn.Email && x.Password == signIn.Password).Include(x => x.HotelSettings).FirstOrDefault();
+            HotelSettings hotelSettings = _dbContext.HotelSettings.Include(x => x.HotelAdmin).Where(x=>x.HotelAdmin.Email.Equals(signIn.Email) && x.HotelAdmin.Password.Equals(signIn.Password)).FirstOrDefault();
 
-            return hotelAdmin;
+            return hotelSettings;
         }
 
         public HotelSettings[] GetHotelsSettings()

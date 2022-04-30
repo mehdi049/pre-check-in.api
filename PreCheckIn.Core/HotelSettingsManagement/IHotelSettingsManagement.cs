@@ -14,7 +14,7 @@ namespace PreCheckIn.Core.HotelSettingsManagement
         Response AddHotelSettings(HotelSettings hotelSettings);
         HotelSettings GetHotelSettingsById(int id);
 
-        HotelAdmin GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn);
+        HotelSettings GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn);
 
         HotelSettings[] GetHotelsSettings();
         Response UpdateHotelSettings(HotelSettings hotelSettings);

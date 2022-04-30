@@ -14,18 +14,21 @@ namespace PreCheckIn.Data.Entities
         public HotelSettings()
         {
             Logo= new Blob();
+            HotelAdmin = new HotelAdmin();
         }
 
-        [Required]
         public int Id { get; set; }
+
+        [Required]
+        public int Reference { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
+        public string Email { get; set; }
+
         public string City { get; set; }
         public string Street { get; set; }
         public string Postcode { get; set; }
-
-        [Required]
-        public string Email { get; set; }
         public string Website { get; set; }
         public string Phone { get; set; }
         public string Fax { get; set; }
@@ -35,6 +38,9 @@ namespace PreCheckIn.Data.Entities
         public string BBQFun { get; set; }
         public string PicnicBasket { get; set; }
         public string DiningOptions { get; set; }
+
+        public int HotelAdminId { get; set; }
+        public HotelAdmin HotelAdmin { get; set; }
 
         [NotMapped]
         public Blob Logo { get; set; }

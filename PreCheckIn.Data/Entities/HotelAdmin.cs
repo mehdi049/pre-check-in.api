@@ -10,13 +10,7 @@ namespace PreCheckIn.Data.Entities
     public class HotelAdmin
     {
         public int Id { get; set; }
-        [Required]
         public string Email { get; set; }
-        [Required]
         public string Password { get; set; }
-
-
-        public int HotelSettingsId { get; set; }
-        public HotelSettings HotelSettings { get; set; }
     }
 }
