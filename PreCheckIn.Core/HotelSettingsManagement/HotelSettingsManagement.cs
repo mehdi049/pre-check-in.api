@@ -81,10 +81,17 @@ namespace PreCheckIn.Core.HotelSettingsManagement
 
             try
             {
-                HotelAdmin hotelAdmin = _dbContext.HotelAdmin.Where(x => x.Email.Equals(hotelSettings.Email)).FirstOrDefault();
+                HotelAdmin hotelAdmin = _dbContext.HotelAdmin.Find(hotelSettings.HotelAdminId);
+                HotelImages hotelImages = _dbContext.HotelImages.Find(hotelSettings.HotelImagesId);
+
                 if (hotelAdmin != null)
                     _dbContext.Remove(hotelAdmin);
+
+                if (hotelImages != null)
+                    _dbContext.Remove(hotelImages);
+
                 _dbContext.Remove(hotelSettings);
+
                 _dbContext.SaveChanges();
 
                 return new Response { Status = HttpStatusCode.OK };
@@ -101,7 +108,7 @@ namespace PreCheckIn.Core.HotelSettingsManagement
 
         public HotelSettings GetHotelSettingsById(int id)
         {
-            return _dbContext.HotelSettings.Find(id);
+            return _dbContext.HotelSettings.Include(x => x.HotelImages).Where(x => x.Id == id).FirstOrDefault();
         }
 
         public HotelSettings GetHotelSettingsBySignIn(HotelSettingsSignInModel signIn)
@@ -109,14 +116,14 @@ namespace PreCheckIn.Core.HotelSettingsManagement
             if (signIn == null)
                 return null;
 
-            HotelSettings hotelSettings = _dbContext.HotelSettings.Include(x => x.HotelAdmin).Where(x=>x.HotelAdmin.Email.Equals(signIn.Email) && x.HotelAdmin.Password.Equals(signIn.Password)).FirstOrDefault();
+            HotelSettings hotelSettings = _dbContext.HotelSettings.Include(x => x.HotelImages).Where(x => x.HotelAdmin.Email.Equals(signIn.Email) && x.HotelAdmin.Password.Equals(signIn.Password)).FirstOrDefault();
 
             return hotelSettings;
         }
 
         public HotelSettings[] GetHotelsSettings()
         {
-            return _dbContext.HotelSettings.ToArray();
+            return _dbContext.HotelSettings.Include(x => x.HotelImages).ToArray();
         }
 
         public Response UpdateHotelSettings(HotelSettings hotelSettings)
@@ -157,6 +164,47 @@ namespace PreCheckIn.Core.HotelSettingsManagement
             try
             {
                 _dbContext.Entry(hotelAdmin).State = EntityState.Modified;
+                _dbContext.SaveChanges();
+
+                return new Response { Status = HttpStatusCode.OK };
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Error occurred, please try again."
+                };
+            }
+        }
+
+        public Response UpdateHotelImages(int hotelId, byte[] image, string imageName)
+        {
+            HotelImages hotelImages = _dbContext.HotelImages.Find(hotelId);
+            if (hotelImages == null)
+                return new Response
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Hotel settings not found, please try again."
+                };
+
+            try
+            {
+                switch (imageName)
+                {
+                    case "logo":
+                        hotelImages.Logo = image;
+                        break;
+                    case "singleRoom":
+                        hotelImages.SingleRoom = image;
+                        break;
+                    case "doubleRoom":
+                        hotelImages.DoubleRoom = image;
+                        break;
+                }
+
+
+                _dbContext.Entry(hotelImages).State = EntityState.Modified;
                 _dbContext.SaveChanges();
 
                 return new Response { Status = HttpStatusCode.OK };

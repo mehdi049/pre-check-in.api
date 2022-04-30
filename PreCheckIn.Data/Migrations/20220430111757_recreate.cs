@@ -21,29 +21,32 @@ namespace PreCheckIn.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HotelSettings",
+                name: "HotelAdmin",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Postcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Fax = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FacebookLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InstagramLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TripAdvisorLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BBQFun = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PicnicBasket = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiningOptions = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HotelSettings", x => x.Id);
+                    table.PrimaryKey("PK_HotelAdmin", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HotelImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Logo = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    SingleRoom = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    DoubleRoom = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HotelImages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,22 +82,42 @@ namespace PreCheckIn.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HotelAdmin",
+                name: "HotelSettings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Reference = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HotelSettingsId = table.Column<int>(type: "int", nullable: false)
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Postcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FacebookLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InstagramLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TripAdvisorLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BBQFun = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PicnicBasket = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DiningOptions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HotelAdminId = table.Column<int>(type: "int", nullable: false),
+                    HotelImagesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HotelAdmin", x => x.Id);
+                    table.PrimaryKey("PK_HotelSettings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HotelAdmin_HotelSettings_HotelSettingsId",
-                        column: x => x.HotelSettingsId,
-                        principalTable: "HotelSettings",
+                        name: "FK_HotelSettings_HotelAdmin_HotelAdminId",
+                        column: x => x.HotelAdminId,
+                        principalTable: "HotelAdmin",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_HotelSettings_HotelImages_HotelImagesId",
+                        column: x => x.HotelImagesId,
+                        principalTable: "HotelImages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -294,9 +317,14 @@ namespace PreCheckIn.Data.Migrations
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HotelAdmin_HotelSettingsId",
-                table: "HotelAdmin",
-                column: "HotelSettingsId");
+                name: "IX_HotelSettings_HotelAdminId",
+                table: "HotelSettings",
+                column: "HotelAdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HotelSettings_HotelImagesId",
+                table: "HotelSettings",
+                column: "HotelImagesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rate_RoomId",
@@ -323,7 +351,7 @@ namespace PreCheckIn.Data.Migrations
                 name: "Guest");
 
             migrationBuilder.DropTable(
-                name: "HotelAdmin");
+                name: "HotelSettings");
 
             migrationBuilder.DropTable(
                 name: "Rate");
@@ -332,7 +360,10 @@ namespace PreCheckIn.Data.Migrations
                 name: "RoomAdds");
 
             migrationBuilder.DropTable(
-                name: "HotelSettings");
+                name: "HotelAdmin");
+
+            migrationBuilder.DropTable(
+                name: "HotelImages");
 
             migrationBuilder.DropTable(
                 name: "Room");

@@ -13,8 +13,8 @@ namespace PreCheckIn.Data.Entities
     {
         public HotelSettings()
         {
-            Logo= new Blob();
             HotelAdmin = new HotelAdmin();
+            HotelImages = new HotelImages();
         }
 
         public int Id { get; set; }
@@ -42,7 +42,7 @@ namespace PreCheckIn.Data.Entities
         public int HotelAdminId { get; set; }
         public HotelAdmin HotelAdmin { get; set; }
 
-        [NotMapped]
-        public Blob Logo { get; set; }
+        public int HotelImagesId { get; set; }
+        public HotelImages HotelImages { get; set; }
     }
 }

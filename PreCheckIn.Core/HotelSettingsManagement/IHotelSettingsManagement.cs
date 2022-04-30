@@ -19,6 +19,7 @@ namespace PreCheckIn.Core.HotelSettingsManagement
         HotelSettings[] GetHotelsSettings();
         Response UpdateHotelSettings(HotelSettings hotelSettings);
         Response UpdateHotelAdmin(HotelAdmin hotelAdmin);
+        Response UpdateHotelImages(int hotelId, byte[] image, string imageName);
         Response DeleteHotelSettings(int id);
     }
 }

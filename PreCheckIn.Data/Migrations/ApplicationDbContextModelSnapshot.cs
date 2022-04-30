@@ -197,16 +197,35 @@ namespace PreCheckIn.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("HotelAdmin");
+                });
+
+            modelBuilder.Entity("PreCheckIn.Data.Entities.HotelImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("DoubleRoom")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("Logo")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("SingleRoom")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HotelImages");
                 });
 
             modelBuilder.Entity("PreCheckIn.Data.Entities.HotelSettings", b =>
@@ -236,6 +255,9 @@ namespace PreCheckIn.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("HotelAdminId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HotelImagesId")
                         .HasColumnType("int");
 
                     b.Property<string>("InstagramLink")
@@ -269,6 +291,8 @@ namespace PreCheckIn.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HotelAdminId");
+
+                    b.HasIndex("HotelImagesId");
 
                     b.ToTable("HotelSettings");
                 });
@@ -514,7 +538,15 @@ namespace PreCheckIn.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PreCheckIn.Data.Entities.HotelImages", "HotelImages")
+                        .WithMany()
+                        .HasForeignKey("HotelImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("HotelAdmin");
+
+                    b.Navigation("HotelImages");
                 });
 
             modelBuilder.Entity("PreCheckIn.Data.Entities.Rate", b =>

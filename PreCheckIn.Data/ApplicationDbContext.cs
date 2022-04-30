@@ -16,6 +16,7 @@ namespace PreCheckIn.Data
 
         public DbSet<HotelSettings> HotelSettings { get; set; }
         public DbSet<HotelAdmin> HotelAdmin { get; set; }
+        public DbSet<HotelImages> HotelImages { get; set; }
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

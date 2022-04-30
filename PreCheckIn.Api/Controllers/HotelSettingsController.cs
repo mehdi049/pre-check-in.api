@@ -85,6 +85,17 @@ namespace PreCheckIn.Api.Controllers
             return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
         }
 
+        [HttpPost]
+        [Route("updateHotelImage/{id}/{name}")]
+        public IActionResult UpdateHotelImage([FromBody] byte[] image, int id, string name)
+        {
+            Response response = _hotelSettingsManagement.UpdateHotelImages(id, image, name);
+            if (response.Status == HttpStatusCode.OK)
+                return Ok(new Response { Status = HttpStatusCode.OK, Body = response.Body, Message = response.Message });
+
+            return Ok(new Response { Status = HttpStatusCode.BadRequest, Message = response.Message });
+        }
+
         [HttpDelete]
         [Route("hotelSettings/{id}")]
         public IActionResult DeleteHotelSettings(int id)
